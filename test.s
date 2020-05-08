@@ -5,12 +5,9 @@ lui $s3, 0xFFFF
 addi $s3, $zero, 0xD000 #P2SAddr
 addi $t0, $t0, 0x075f
 sw $t0, 0($s2)
-addi $t0, $zero, 0x775f
-sw $t0, 0x257c($s2)
-sw $t0, 0x2580($s2)
 j read
 
-read:
+dismore:
 lw $t1, 0($s3)
 lui $t3, 0x8000
 and $t2, $t1, $t3 //if t1 read
@@ -113,7 +110,13 @@ andi $t5, $t1, 0xffff
  addi $t4, $zero, 0x66 #backspace
  beq $t5, $t4, back_space
  addi $t4, $zero, 0x76
- beq $t5, $t4, clr #clear screen
+ beq $t5, $t4, clr1 #clear screen
+ addi $t4, $zero, 0x05
+ beq $t5, $t4, f1 #f1
+ addi $t4, $zero, 0x06
+ beq $t5, $t4, f2 #f2
+ addi $t4, $zero, 0x04
+ beq $t5, $t4, f3 #f3
  j read
 
 a:
@@ -265,6 +268,10 @@ space:
  jal display
  j read
 enter:
+ lui $t0, 12
+ addi $t0, $t0, 0x2300
+ slt $t1, $s2, $t0
+ beq $t1, $zero, read
  add $s4, $zero, $zero
  jal display
  lui $t6, 12
@@ -284,6 +291,11 @@ back_space:
  addi $s4, $zero, 0x075f
  sw $s4, 0($s2)
  j read
+
+clr1:
+ lui $s2, 12
+ addi $s2,$s2,0x243c
+ j clr
 clr:
  sw $zero, 0($s2)
  beq $s2, $zero, main
@@ -324,7 +336,7 @@ right:
 
 down:
  lui $t6, 12
- addi $t6, $t6, 0x243c #end of first line
+ addi $t6, $t6, 0x22fc #end of first line
  slt $t0, $t6, $s2
  bne $t0, $zero, read
  sw $s7, 0($s2)
@@ -334,10 +346,221 @@ down:
  sw $t3, 0($s2)
  j read
 
+f1:
+ lui $t0, 12
+ beq $t0, $s2, read
+ addi $t0, $s2, -4
+ lw $t0, ($t0)
+ andi $s4, $t0, 0x00f0
+ srl $s4, $s4, 4
+ addi $s4, $s4, 0x30
+ jal display
+ andi $s4, $t0, 0x000f
+ slti $t0, $s4, 0xa
+ beq $t0, $zero, char
+ addi $s4, $s4, 0x30
+ jal display
+ j color
+
+f2: #scroll up
+ lui $s5, 12
+ lui $s6, 12
+ addi $s6, $s6, 0x2300
+ loop3:
+ beq $s5, $s6, lastline
+ lw $t0, 0x140($s5)
+ sw $t0, 0($s5)
+ addi $s5, $s5, 4
+ j loop3
+ lastline:
+ lui $s6, 12
+ addi $s6, $s6, 0x2440
+ loop4:
+ beq $s5, $s6, read
+ sw $zero, 0($s5)
+ addi $s5, $s5, 4
+ j loop4
+
+
+f3:
+ lui $s5, 12
+ addi $s5, $s5, 0x243c
+ lui $s6, 12
+ addi $s6, $s6, 0x13c
+ loop5:
+ beq $s5, $s6, firstline
+ lw $t0, -0x140($s5)
+ sw $t0, 0($s5)
+ addi $s5, $s5, -4
+ j loop5
+ firstline:
+ lui $s6, 12
+ addi $s6, $s6, -4
+ loop6:
+ beq $s5, $s6, read
+ sw $zero, 0($s5)
+ addi $s5, $s5, -4
+ j loop6
+
+char:
+ addi $t0, $zero, 0xa
+ beq $s4, $t0, a
+ addi $t0, $zero, 0xb
+ beq $s4, $t0, b
+ addi $t0, $zero, 0xc
+ beq $s4, $t0, c
+ addi $t0, $zero, 0xd
+ beq $s4, $t0, d
+ addi $t0, $zero, 0xe
+ beq $s4, $t0, e
+ addi $t0, $zero, 0xf
+ beq $s4, $t0, f
+ j color
+
+color:
+ addi $t0, $s2, -8
+ lw $t1, 0($t0)
+ addi $t1, $t1, 0x1000
+ addi $t1, $t1, -0x0500
+ sw $t1, 0($t0)
+ lw $t1, 4($t0)
+ addi $t1, $t1, 0x1000
+ addi $t1, $t1, -0x0500
+ sw $t1, 4($t0)
+ j read
+
 display:
+ lui $t0, 12
+ addi $t0,$t0,0x243c
+ slt $t0, $s2, $t0
+ beq $t0, $zero, back
  addi $t0, $s4, 0x0700
  sw $t0, 0($s2) # to display
  addi $s2, $s2, 4
  addi $s4, $zero, 0x075f #cur
  sw $s4, 0($s2) #display cur
+ jr $ra
+ back:
+ jr $ra
+
+read:
+ lui $s5, 12
+ addi $s5, $s5, 0x2440
+ addi $s6, $zero, 0x4724 #$
+ jal dispc
+ addi $s6, $zero, 0x4773 #s
+ jal dispc
+ addi $s6, $zero, 0x4732 #2
+ jal dispc
+ addi $s6, $zero, 0x473A #:
+ jal dispc
+ srl $s6, $s2, 28  #s2 8
+ jal process
+ jal dispc
+ srl $s6, $s2, 24
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4700
+ jal process
+ jal dispc
+ srl $s6, $s2, 20
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4700
+ jal process
+ jal dispc
+ srl $s6, $s2, 16
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4700
+ jal process
+ jal dispc
+ srl $s6, $s2, 12
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4700
+ jal process
+ jal dispc
+ srl $s6, $s2, 8
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4700
+ jal process
+ jal dispc
+ srl $s6, $s2, 4
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4700
+ jal process
+ jal dispc
+ addi $s6, $s2, 0
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4700
+ jal process
+ jal dispc
+ add $s6, $zero, $zero
+ jal dispc
+ add $a0, $zero, $s2
+ jal showdata
+ j dismore
+
+showdata:
+ lw $s1, -4($a0)
+ add $s0, $zero, $ra
+ addi $s6, $zero, 0x4724 #$
+ jal dispc
+ addi $s6, $zero, 0x4761 #a
+ jal dispc
+ addi $s6, $zero, 0x4730 #0
+ jal dispc
+ addi $s6, $zero, 0x473A #:
+ jal dispc
+ srl $s6, $s1, 28  #s2 8
+ jal process
+ jal dispc
+ srl $s6, $s1, 24
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4700
+ jal process
+ jal dispc
+ srl $s6, $s1, 20
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4700
+ jal process
+ jal dispc
+ srl $s6, $s1, 16
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4700
+ jal process
+ jal dispc
+ srl $s6, $s1, 12
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4700
+ jal process
+ jal dispc
+ srl $s6, $s1, 8
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4700
+ jal process
+ jal dispc
+ srl $s6, $s1, 4
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4700
+ jal process
+ jal dispc
+ addi $s6, $s1, 0
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4700
+ jal process
+ jal dispc
+ jr $s0
+
+process:
+ andi $s6, $s6, 0xf
+ slti $t1, $s6, 0xa
+ bne $t1, $zero, num
+ addi $s6, $s6, -0xa
+ addi $s6, $s6, 0x4741
+ jr $ra
+num:
+ addi $s6, $s6, 0x4730
+ jr $ra
+
+dispc:
+ sw $s6, 0($s5) # to display
+ addi $s5, $s5, 4
  jr $ra
