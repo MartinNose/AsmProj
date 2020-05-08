@@ -496,7 +496,78 @@ read:
  jal dispc
  add $a0, $zero, $s2
  jal showdata
+ add $s6, $zero, $zero
+ jal dispc
+ addi $a0, $zero, 0x00fa
+ jal showbin
+ add $s6, $zero, $zero
+ jal dispc
+ jal showbutton
  j dismore
+
+showbin:
+ addi $t9, $ra, 0
+ add $t1, $zero, $zero
+ loopd3:
+ slti $t2, $a0, 1000
+ bne $t2, $zero, loopd2
+ addi $a0, $a0, -1000
+ addi $t1, $t1, 0x1000
+ j loopd3
+ loopd2:
+ slti $t2, $a0, 100
+ bne $t2, $zero, loopd1
+ addi $a0, $a0, -100
+ addi $t1, $t1, 0x100
+ j loopd2
+ loopd1:
+ slti $t2, $a0, 10
+ bne $t2, $zero, loopd0
+ addi $a0, $a0, -10
+ addi $t1, $t1, 0x10
+ j loopd1
+ loopd0:
+ slti $t2, $a0, 1
+ bne $t2, $zero, showbin2
+ addi $a0, $a0, -1
+ addi $t1, $t1, 0x1
+ j loopd0
+ showbin2:
+ srl $s6, $t1, 12
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4730
+ jal dispc
+ srl $s6, $t1, 8
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4730
+ jal dispc
+ srl $s6, $t1, 4
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4730
+ jal dispc
+ addi $s6, $t1, 0
+ andi $s6, $s6, 0xf
+ addi $s6, $s6, 0x4730
+ jal dispc
+ jr $t9
+
+showbutton:
+ lui $t1, 0xffff
+ addi $t1, $zero, 0xfc00
+ lw $t0, 0($t1)
+ andi $s6, $t0, 0x000f
+ slti $t0, $s6, 0xa
+ bne $t0, $zero, sb1
+ addi $s6, $s6, -0xa
+ addi $s6, $s6, 0x4741
+ sw  $s6, 0($s5) # to display
+ addi $s5, $s5, 4
+ jr $ra
+sb1:
+ addi $s6, $s6, 0x4730
+ sw  $s6, 0($s5) # to display
+ addi $s5, $s5, 4
+ jr $ra
 
 showdata:
  lw $s1, -4($a0)
