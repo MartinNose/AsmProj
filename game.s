@@ -43,7 +43,7 @@ game:
     addi $s0, $s0, 1
     sw $s0, 0($s1)
     #read PS and process 
-
+    
     #read done
     j game
 
