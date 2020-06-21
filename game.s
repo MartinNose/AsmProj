@@ -35,7 +35,7 @@ game:
     lui $s1, 0
     ori $s1, $zero, 0xf02c # time count
     lw $s0, 0($s1)
-    lui $s2, 0x0020
+    lui $s2, 0x0009
     bne $s0, $s2, no_update_Ob
         jal update_Ob
         ori $s0, $zero, 0
@@ -45,44 +45,43 @@ game:
     #read PS and process 
     lui $s0, 0xffff
     ori $s0, $s0, 0xd000 # PS2 Addr
-    ori $s1, $zero, 0xf028 # duck Addr
-    lw $t0, 0($s0) # Read PS2
-    lui $t1, 0x8000
-    ori $t1, $zero, 0x001D
-    bne $t0, $t1, no_w
-        lw $t3, 0($s1) # Read Duck Position
+    ori $s1, $zero, 0xf028 # duck position Addr
+    lw $t7, 0($s0) # Read PS2
+    lui $t6, 0x8000
+    ori $t6, $t6, 0x001D
+    lw $t3, 0($s1) # Read Duck Position
+    bne $t7, $t6, no_w
         ori $t4, $zero, 1
         beq $t3, $t4, top
             addi $t3, $t3, -1
         top:
-        sw $t3, 0($s1)
-        j draw_duck
+        j draw
     no_w:
-    lui $t1, 0x8000
-    ori $t1, $zero, 0x00F0
-    bne $t0, $t1, no_duan_ma
-        lw $t0, 0($s0)
-        j draw_duck
+    lui $t6, 0x8000
+    ori $t6, $t6, 0x00F0
+    bne $t7, $t6, no_duan_ma
+        lw $t7, 0($s0)
+        ori $t7, $zero, 0
+        j draw
     no_duan_ma:
-    lui $t1, 0x8000
-    ori $t1, $zero, 0x001B
-    bne $t0, $t1, no_s
-        lw $t3, 0($s1)
+    lui $t6, 0x8000
+    ori $t6, $t6, 0x001B
+    bne $t7, $t6, no_s
         ori $t2, $zero, 30
         beq $t3, $t2, bottom
             addi $t3, $t3, 1
         bottom:
-        sw $t3, 0($s1)
-        j draw_duck
+        j draw
 
     no_s:
         sll $zero, $zero, 0
     # draw duck and judge
-    draw_duck:
+    draw:
         lw $t0, 0($s1) # Read Positon
+        beq $t0, $t3, no_cover
         ori $t1, $zero, 0
         lui $s2, 0x000C
-        ori $s2, $zero, 4904 # Bird Cursor
+        ori $s2, $s2, 4904 # Bird Cursor
         draw_duck_loop:
             addi $t1, $t1, 1
             addi $s2, $s2, 320
@@ -90,8 +89,25 @@ game:
         lw $t0, 0($s2)
         ori $t1, $zero, 0x202f
         beq $t0, $t1, game_over
+        ori $t1, $zero, 0x3000
+        sw $t1, 0($s2) # draw duck
+
+        sw $t3, 0($s1)
+    no_cover:
+        lw $t0, 0($s1) # Read Positon
+        ori $t1, $zero, 0
+        lui $s2, 0x000C
+        ori $s2, $s2, 4904 # Bird Cursor
+        draw_duck_loop1:
+            addi $t1, $t1, 1
+            addi $s2, $s2, 320
+        bne $t1, $t0, draw_duck_loop1
+        lw $t0, 0($s2)
+        ori $t1, $zero, 0x202f
+        beq $t0, $t1, game_over
         ori $t1, $zero, 0x6600
         sw $t1, 0($s2) # draw duck
+        
 j game
 
 game_over:
@@ -127,7 +143,23 @@ update_Ob:
     set_new_addr:
     sw $t1, 0($t0)
 
+    jal draw_ob
+
+    lw $ra, 4($sp)
+    lw $s0, 8($sp)
+    lw $s1, 12($sp)
+    lw $s2, 16($sp)
+    addi $sp, $sp, 16
+jr $ra
     # draw ob
+
+draw_ob:
+    addi $sp, $sp, -16
+    sw $ra, 4($sp)
+    sw $s0, 8($sp)
+    sw $s1, 12($sp)
+    sw $s2, 16($sp)
+
     ori $s0, $zero, 0xf000 # ob info
     lui $s1, 0x000C
     ori $s1, $s1, 5200 # vga cursor
@@ -180,7 +212,7 @@ update_Ob:
     lw $s1, 12($sp)
     lw $s2, 16($sp)
     addi $sp, $sp, 16
-    jr $ra
+jr $ra
 
 .data 0xf000
     .word 0  # 0xf000 obstacle positon 0
