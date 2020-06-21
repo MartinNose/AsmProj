@@ -28,7 +28,7 @@ main:
         addi $t0, $t0, 1
         slti $t3, $t0, 32
         bne $t3, $zero, main_loop_2
-   # Border drawn
+    # Border drawn
 
 game:
     lui $s1, 0
@@ -74,7 +74,7 @@ update_Ob:
     bne $t3, $t1, set_new_addr
         ori $t1, $zero, 0xf034
     set_new_addr:
-        sw $t1, 0($t0)
+    sw $t1, 0($t0)
 
     # draw ob
     ori $s0, $zero, 0xf000 # ob info
@@ -87,9 +87,9 @@ update_Ob:
     draw_Ob_Outter_loop: # draw t0 th ob
         addi $t0, $t0, 1
         lw $s4, 0($s0) # load ob info to s4
-        addi $s0, $s0, 4
-        beq $s4, $zero, draw_Ob_Outter_loop
-
+        bne $s4, $zero, green
+            ori $s2, $zero, 0x004f #black O
+        green:
         ori $t2, $zero, 0
         draw_Ob_Inner_loop1: # draw upper ob
             addi $t2, $t2, 1
@@ -97,9 +97,10 @@ update_Ob:
             sw $s2, 4($s1)
             sw $s2, 8($s1)
             sw $s2, 12($s1)
-            addi $s1, $s1, 308
+            addi $s1, $s1, 320
         bne $t2, $s4, draw_Ob_Inner_loop1
         addi $t2, $t2, 5
+        addi $s1, $s1, 1600
         ori $s4, $zero, 30
         draw_Ob_Inner_loop2: # draw lower ob
             addi $t2, $t2, 1
@@ -107,8 +108,10 @@ update_Ob:
             sw $s2, 4($s1)
             sw $s2, 8($s1)
             sw $s2, 12($s1)
-            addi $s1, $s1, 308
+            addi $s1, $s1, 320
         bne $t2, $s4, draw_Ob_Inner_loop2
+        addi $s1, $s1, -9600
+        addi $s1, $s1, 16
     bne $t0, $t1, draw_Ob_Outter_loop
 
     lw $ra, 4($sp)
@@ -136,104 +139,103 @@ update_Ob:
 # rand count
     .word 0xf034 #0xf030
 # random number
-    
-    .word 0 #0xf034
-    .word 20 #0xf038
-    .word 0 #0xf03c
+    .word 15 #0xf034
+    .word 15 #0xf038
+    .word 15 #0xf03c
     .word 15 #0xf040
-    .word 0 #0xf044
-    .word 15 #0xf048
-    .word 0 #0xf04c
-    .word 20 #0xf050
-    .word 0 #0xf054
-    .word 10 #0xf058
-    .word 0 #0xf05c
-    .word 5 #0xf060
-    .word 0 #0xf064
-    .word 5 #0xf068
-    .word 0 #0xf06c
-    .word 15 #0xf070
-    .word 0 #0xf074
-    .word 10 #0xf078
-    .word 0 #0xf07c
-    .word 15 #0xf080
-    .word 0 #0xf084
+    .word 10 #0xf044
+    .word 5 #0xf048
+    .word 5 #0xf04c
+    .word 5 #0xf050
+    .word 10 #0xf054
+    .word 5 #0xf058
+    .word 15 #0xf05c
+    .word 20 #0xf060
+    .word 15 #0xf064
+    .word 10 #0xf068
+    .word 20 #0xf06c
+    .word 20 #0xf070
+    .word 10 #0xf074
+    .word 5 #0xf078
+    .word 20 #0xf07c
+    .word 20 #0xf080
+    .word 20 #0xf084
     .word 20 #0xf088
-    .word 0 #0xf08c
-    .word 10 #0xf090
-    .word 0 #0xf094
-    .word 5 #0xf098
-    .word 0 #0xf09c
-    .word 5 #0xf0a0
-    .word 0 #0xf0a4
+    .word 10 #0xf08c
+    .word 20 #0xf090
+    .word 5 #0xf094
+    .word 15 #0xf098
+    .word 15 #0xf09c
+    .word 20 #0xf0a0
+    .word 15 #0xf0a4
     .word 5 #0xf0a8
-    .word 0 #0xf0ac
-    .word 10 #0xf0b0
-    .word 0 #0xf0b4
-    .word 20 #0xf0b8
-    .word 0 #0xf0bc
-    .word 5 #0xf0c0
-    .word 0 #0xf0c4
-    .word 15 #0xf0c8
-    .word 0 #0xf0cc
-    .word 15 #0xf0d0
-    .word 0 #0xf0d4
-    .word 5 #0xf0d8
-    .word 0 #0xf0dc
-    .word 20 #0xf0e0
-    .word 0 #0xf0e4
-    .word 10 #0xf0e8
-    .word 0 #0xf0ec
-    .word 5 #0xf0f0
-    .word 0 #0xf0f4
-    .word 5 #0xf0f8
-    .word 0 #0xf0fc
-    .word 5 #0xf100
-    .word 0 #0xf104
-    .word 20 #0xf108
-    .word 0 #0xf10c
-    .word 15 #0xf110
-    .word 0 #0xf114
-    .word 10 #0xf118
-    .word 0 #0xf11c
-    .word 5 #0xf120
-    .word 0 #0xf124
-    .word 15 #0xf128
-    .word 0 #0xf12c
-    .word 20 #0xf130
-    .word 0 #0xf134
-    .word 20 #0xf138
-    .word 0 #0xf13c
-    .word 15 #0xf140
-    .word 0 #0xf144
-    .word 20 #0xf148
-    .word 0 #0xf14c
-    .word 10 #0xf150
-    .word 0 #0xf154
-    .word 5 #0xf158
-    .word 0 #0xf15c
-    .word 20 #0xf160
-    .word 0 #0xf164
-    .word 5 #0xf168
-    .word 0 #0xf16c
-    .word 10 #0xf170
-    .word 0 #0xf174
-    .word 15 #0xf178
-    .word 0 #0xf17c
-    .word 10 #0xf180
-    .word 0 #0xf184
-    .word 20 #0xf188
-    .word 0 #0xf18c
-    .word 20 #0xf190
-    .word 0 #0xf194
-    .word 5 #0xf198
-    .word 0 #0xf19c
-    .word 20 #0xf1a0
-    .word 0 #0xf1a4
-    .word 10 #0xf1a8
-    .word 0 #0xf1ac
-    .word 10 #0xf1b0
-    .word 0 #0xf1b4
-    .word 10 #0xf1b8
-    .word 0 #0xf1bc
+    .word 5 #0xf0ac
+    .word 5 #0xf0b0
+    .word 20 #0xf0b4
+    .word 10 #0xf0b8
+    .word 5 #0xf0bc
     .word 15 #0xf0c0
+    .word 5 #0xf0c4
+    .word 20 #0xf0c8
+    .word 15 #0xf0cc
+    .word 15 #0xf0d0
+    .word 5 #0xf0d4
+    .word 15 #0xf0d8
+    .word 20 #0xf0dc
+    .word 20 #0xf0e0
+    .word 20 #0xf0e4
+    .word 20 #0xf0e8
+    .word 20 #0xf0ec
+    .word 20 #0xf0f0
+    .word 10 #0xf0f4
+    .word 20 #0xf0f8
+    .word 15 #0xf0fc
+    .word 20 #0xf100
+    .word 20 #0xf104
+    .word 15 #0xf108
+    .word 15 #0xf10c
+    .word 5 #0xf110
+    .word 10 #0xf114
+    .word 20 #0xf118
+    .word 10 #0xf11c
+    .word 10 #0xf120
+    .word 15 #0xf124
+    .word 20 #0xf128
+    .word 20 #0xf12c
+    .word 20 #0xf130
+    .word 15 #0xf134
+    .word 20 #0xf138
+    .word 5 #0xf13c
+    .word 20 #0xf140
+    .word 5 #0xf144
+    .word 10 #0xf148
+    .word 10 #0xf14c
+    .word 10 #0xf150
+    .word 20 #0xf154
+    .word 15 #0xf158
+    .word 10 #0xf15c
+    .word 15 #0xf160
+    .word 5 #0xf164
+    .word 10 #0xf168
+    .word 20 #0xf16c
+    .word 5 #0xf170
+    .word 20 #0xf174
+    .word 5 #0xf178
+    .word 10 #0xf17c
+    .word 15 #0xf180
+    .word 20 #0xf184
+    .word 10 #0xf188
+    .word 20 #0xf18c
+    .word 10 #0xf190
+    .word 20 #0xf194
+    .word 5 #0xf198
+    .word 15 #0xf19c
+    .word 20 #0xf1a0
+    .word 5 #0xf1a4
+    .word 20 #0xf1a8
+    .word 5 #0xf1ac
+    .word 15 #0xf1b0
+    .word 15 #0xf1b4
+    .word 15 #0xf1b8
+    .word 5 #0xf1bc
+    .word 20 #0xf1c0
