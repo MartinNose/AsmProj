@@ -1,7 +1,6 @@
 .text 0x0000
 main:
-    lui $sp, 0x000f
-    ori $sp, $sp, 0xf000
+    addi $sp, $zero, 0xf00
     lui $s2, 0x000C #VGACursor
     ori $s2, $s2, 4880
     addi $s4, $zero, 0x074f
