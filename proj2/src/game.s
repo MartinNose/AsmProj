@@ -33,7 +33,7 @@ main:
 
 game:
     lui $s1, 0
-    ori $s1, $zero, 0xf02c # time count
+    ori $s1, $zero, 0x042c # time count
     lw $s0, 0($s1)
     lui $s2, 0x0009
     bne $s0, $s2, no_update_Ob
@@ -45,7 +45,7 @@ game:
     #read PS and process 
     lui $s0, 0xffff
     ori $s0, $s0, 0xd000 # PS2 Addr
-    ori $s1, $zero, 0xf028 # duck position Addr
+    ori $s1, $zero, 0x0428 # duck position Addr
     lw $t7, 0($s0) # Read PS2
     lui $t6, 0x8000
     ori $t6, $t6, 0x001D
@@ -121,25 +121,25 @@ update_Ob:
     sw $s2, 16($sp)
 
     lui $t0, 0
-    ori $t0, $t0, 0xf000 # ob position
+    ori $t0, $t0, 0x0400 # ob position
     lui $t3, 0
-    ori $t3, $t3, 0xf024 # duck position
-    process_loop: # process 0xf000 - 0xf024
+    ori $t3, $t3, 0x0424 # duck position
+    process_loop: # process 0x0400 - 0x0424
         lw $t1, 4($t0)
         sw $t1, 0($t0)
         addi $t0, $t0, 4
-        ori $s4, $zero, 0xf024
+        ori $s4, $zero, 0x0424
         bne $t0, $s4, process_loop
     lui $t0, 0
-    ori $t0, $zero, 0xf030 # address of random address
+    ori $t0, $zero, 0x0430 # address of random address
     lw $t1, 0($t0) # t1 got the random address
     lw $t4, 0($t1) # t4 got the random
-    sw $t4, -12($t0) # save to 0xf024
+    sw $t4, -12($t0) # save to 0x0424
     lui $s3, 0
-    ori $t3, $zero, 0xf1c4
+    ori $t3, $zero, 0x05c4
     addi $t1, $t1, 4
     bne $t3, $t1, set_new_addr
-        ori $t1, $zero, 0xf034
+        ori $t1, $zero, 0x0434
     set_new_addr:
     sw $t1, 0($t0)
 
@@ -160,7 +160,7 @@ draw_ob:
     sw $s1, 12($sp)
     sw $s2, 16($sp)
 
-    ori $s0, $zero, 0xf000 # ob info
+    ori $s0, $zero, 0x0400 # ob info
     lui $s1, 0x000C
     ori $s1, $s1, 5200 # vga cursor
 
@@ -214,121 +214,121 @@ draw_ob:
     addi $sp, $sp, 16
 jr $ra
 
-.data 0xf000
-    .word 0  # 0xf000 obstacle positon 0
-    .word 0  # 0xf004 obstacle positon 1
-    .word 0  # 0xf008 obstacle positon 2
-    .word 0  # 0xf00c obstacle positon 3
-    .word 0  # 0xf010 obstacle positon 4
-    .word 0  # 0xf014 obstacle positon 5
-    .word 0  # 0xf018 obstacle positon 6
-    .word 0  # 0xf01c obstacle positon 7
-    .word 0  # 0xf020 obstacle positon 8
-    .word 10 # 0xf024 obstacle position 9
+.data 0x0400
+    .word 0  # 0x0400 obstacle positon 0
+    .word 0  # 0x0404 obstacle positon 1
+    .word 0  # 0x0408 obstacle positon 2
+    .word 0  # 0x040c obstacle positon 3
+    .word 0  # 0x0410 obstacle positon 4
+    .word 0  # 0x0414 obstacle positon 5
+    .word 0  # 0x0418 obstacle positon 6
+    .word 0  # 0x041c obstacle positon 7
+    .word 0  # 0x0420 obstacle positon 8
+    .word 10 # 0x0424 obstacle position 9
     
-    .word 15 # 0xf028 duck position
+    .word 15 # 0x0428 duck position
 
-    .word 0  # 0xf02c time count
+    .word 0  # 0x042c time count
 # rand count
-    .word 0xf034 #0xf030
+    .word 0x0434 #0x0430
 # random number
-    .word  0 #0xf034
-    .word  0 #0xf038
-    .word 20 #0xf03c
-    .word  0 #0xf040
-    .word  0 #0xf044
-    .word 15 #0xf048
-    .word  0 #0xf04c
-    .word  0 #0xf050
-    .word 15 #0xf054
-    .word  0 #0xf058
-    .word  0 #0xf05c
-    .word 20 #0xf060
-    .word  0 #0xf064
-    .word  0 #0xf068
-    .word  5 #0xf06c
-    .word  0 #0xf070
-    .word  0 #0xf074
-    .word 10 #0xf078
-    .word  0 #0xf07c
-    .word  0 #0xf080
-    .word 10 #0xf084
-    .word  0 #0xf088
-    .word  0 #0xf08c
-    .word 15 #0xf090
-    .word  0 #0xf094
-    .word  0 #0xf098
-    .word 15 #0xf09c
-    .word  0 #0xf0a0
-    .word  0 #0xf0a4
-    .word 10 #0xf0a8
-    .word  0 #0xf0ac
-    .word  0 #0xf0b0
-    .word 15 #0xf0b4
-    .word  0 #0xf0b8
-    .word  0 #0xf0bc
-    .word  5 #0xf0c0
-    .word  0 #0xf0c4
-    .word  0 #0xf0c8
-    .word 15 #0xf0cc
-    .word  0 #0xf0d0
-    .word  0 #0xf0d4
-    .word  5 #0xf0d8
-    .word  0 #0xf0dc
-    .word  0 #0xf0e0
-    .word 15 #0xf0e4
-    .word  0 #0xf0e8
-    .word  0 #0xf0ec
-    .word 10 #0xf0f0
-    .word  0 #0xf0f4
-    .word  0 #0xf0f8
-    .word 10 #0xf0fc
-    .word  0 #0xf100
-    .word  0 #0xf104
-    .word 15 #0xf108
-    .word  0 #0xf10c
-    .word  0 #0xf110
-    .word 10 #0xf114
-    .word  0 #0xf118
-    .word  0 #0xf11c
-    .word 20 #0xf120
-    .word  0 #0xf124
-    .word  0 #0xf128
-    .word 15 #0xf12c
-    .word  0 #0xf130
-    .word  0 #0xf134
-    .word 10 #0xf138
-    .word  0 #0xf13c
-    .word  0 #0xf140
-    .word 10 #0xf144
-    .word  0 #0xf148
-    .word  0 #0xf14c
-    .word 10 #0xf150
-    .word  0 #0xf154
-    .word  0 #0xf158
-    .word 15 #0xf15c
-    .word  0 #0xf160
-    .word  0 #0xf164
-    .word 20 #0xf168
-    .word  0 #0xf16c
-    .word  0 #0xf170
-    .word 10 #0xf174
-    .word  0 #0xf178
-    .word  0 #0xf17c
-    .word 15 #0xf180
-    .word  0 #0xf184
-    .word  0 #0xf188
-    .word  5 #0xf18c
-    .word  0 #0xf190
-    .word  0 #0xf194
-    .word 15 #0xf198
-    .word  0 #0xf19c
-    .word  0 #0xf1a0
-    .word 10 #0xf1a4
-    .word  0 #0xf1a8
-    .word  0 #0xf1ac
-    .word 15 #0xf1b0
-    .word  0 #0xf1b4
-    .word  0 #0xf1b8
-    .word 15 #0xf1bc
+    .word  0 #0x0434
+    .word  0 #0x0438
+    .word 20 #0x043c
+    .word  0 #0x0440
+    .word  0 #0x0444
+    .word 15 #0x0448
+    .word  0 #0x044c
+    .word  0 #0x0450
+    .word 15 #0x0454
+    .word  0 #0x0458
+    .word  0 #0x045c
+    .word 20 #0x0460
+    .word  0 #0x0464
+    .word  0 #0x0468
+    .word  5 #0x046c
+    .word  0 #0x0470
+    .word  0 #0x0474
+    .word 10 #0x0478
+    .word  0 #0x047c
+    .word  0 #0x0480
+    .word 10 #0x0484
+    .word  0 #0x0488
+    .word  0 #0x048c
+    .word 15 #0x0490
+    .word  0 #0x0494
+    .word  0 #0x0498
+    .word 15 #0x049c
+    .word  0 #0x04a0
+    .word  0 #0x04a4
+    .word 10 #0x04a8
+    .word  0 #0x04ac
+    .word  0 #0x04b0
+    .word 15 #0x04b4
+    .word  0 #0x04b8
+    .word  0 #0x04bc
+    .word  5 #0x04c0
+    .word  0 #0x04c4
+    .word  0 #0x04c8
+    .word 15 #0x04cc
+    .word  0 #0x04d0
+    .word  0 #0x40d4
+    .word  5 #0x40d8
+    .word  0 #0x40dc
+    .word  0 #0x40e0
+    .word 15 #0x04e4
+    .word  0 #0x04e8
+    .word  0 #0x04ec
+    .word 10 #0x04f0
+    .word  0 #0x04f4
+    .word  0 #0x04f8
+    .word 10 #0x04fc
+    .word  0 #0x0500
+    .word  0 #0x0504
+    .word 15 #0x0508
+    .word  0 #0x050c
+    .word  0 #0x0510
+    .word 10 #0x0514
+    .word  0 #0x0518
+    .word  0 #0x051c
+    .word 20 #0x0520
+    .word  0 #0x0524
+    .word  0 #0x0528
+    .word 15 #0x052c
+    .word  0 #0x0530
+    .word  0 #0x0534
+    .word 10 #0x0538
+    .word  0 #0x053c
+    .word  0 #0x0540
+    .word 10 #0x0544
+    .word  0 #0x0548
+    .word  0 #0x054c
+    .word 10 #0x0550
+    .word  0 #0x0554
+    .word  0 #0x0558
+    .word 15 #0x055c
+    .word  0 #0x0560
+    .word  0 #0x0564
+    .word 20 #0x0568
+    .word  0 #0x056c
+    .word  0 #0x0570
+    .word 10 #0x0574
+    .word  0 #0x0578
+    .word  0 #0x057c
+    .word 15 #0x0580
+    .word  0 #0x0584
+    .word  0 #0x0588
+    .word  5 #0x058c
+    .word  0 #0x0590
+    .word  0 #0x0594
+    .word 15 #0x0598
+    .word  0 #0x059c
+    .word  0 #0x05a0
+    .word 10 #0x05a4
+    .word  0 #0x05a8
+    .word  0 #0x05ac
+    .word 15 #0x05b0
+    .word  0 #0x05b4
+    .word  0 #0x05b8
+    .word 15 #0x05bc
  
